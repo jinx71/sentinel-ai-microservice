@@ -1,0 +1,28 @@
+services:
+  api:
+    build: .
+    image: sentinel-ai-microservice:local
+    ports:
+      - "8000:8000"
+    environment:
+      LOG_LEVEL: INFO
+      CONTAMINATION: "0.02"
+      ENABLE_LLM_EXPLANATIONS: "false"
+      # ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/healthz').status==200 else 1)"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+  # Optional: `docker compose --profile monitoring up` to bring up Prometheus
+  # and watch the anomaly rate / latency metrics scraped from the api service.
+  prometheus:
+    image: prom/prometheus:latest
+    profiles: ["monitoring"]
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - api
