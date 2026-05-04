@@ -1,0 +1,23 @@
+# Requires an ingress controller (e.g. ingress-nginx). Replace the host with your own.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sentinel-ai
+  namespace: sentinel
+  labels:
+    app.kubernetes.io/name: sentinel-ai-microservice
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: sentinel.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: sentinel-ai
+                port:
+                  number: 80
