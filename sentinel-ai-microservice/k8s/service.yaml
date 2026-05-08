@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sentinel-ai
+  namespace: sentinel
+  labels:
+    app.kubernetes.io/name: sentinel-ai-microservice
+spec:
+  type: ClusterIP
+  selector:
+    app: sentinel-ai
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
